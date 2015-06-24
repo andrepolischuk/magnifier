@@ -53,6 +53,7 @@ export default class Magnifier {
     const {left, top} = offset(this.el);
 
     if (!isInside(this.el, event)) return this.hide();
+    this.show();
 
     const ratioX = this.imageWidth / this.el.offsetWidth;
     const ratioY = this.imageHeight / this.el.offsetHeight;
@@ -69,7 +70,6 @@ export default class Magnifier {
     this.lens.style.left = `${x}px`;
     this.lens.style.top = `${y}px`;
     this.lens.style.backgroundPosition = `${imageX}px ${imageY}px`;
-    this.show();
   }
 
   bind() {
