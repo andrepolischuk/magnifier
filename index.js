@@ -1,11 +1,5 @@
 
 /**
- * Module dependencies
- */
-
-import offset from 'offset';
-
-/**
  * Expose magnifier
  *
  * @param {Element} el
@@ -67,14 +61,14 @@ export default class Magnifier {
     let y = pageY - this.lens.offsetHeight / 2;
 
     if (!isStatic(this.el)) {
-      x -= left;
-      y -= top;
+      x -= left - this.el.offsetLeft;
+      y -= top - this.el.offsetTop;
     }
 
-    this.show();
     this.lens.style.left = `${x}px`;
     this.lens.style.top = `${y}px`;
     this.lens.style.backgroundPosition = `${imageX}px ${imageY}px`;
+    this.show();
   }
 
   bind() {
@@ -149,5 +143,26 @@ function isInside(el, event) {
 function isStatic(el) {
   const {left, top} = offset(el);
   const {offsetLeft, offsetTop} = el;
-  return Math.ceil(left) === offsetLeft && Math.ceil(top) === offsetTop;
+  return left === offsetLeft && top === offsetTop;
+}
+
+/**
+ * Global offset
+ *
+ * @param {Element} el
+ * @return {Object}
+ * @api private
+ */
+
+function offset(el) {
+  let left = 0;
+  let top = 0;
+
+  while(el) {
+    left += el.offsetLeft;
+    top += el.offsetTop;
+    el = el.offsetParent;
+  }
+
+  return {left, top};
 }

@@ -9,9 +9,6 @@
     "loupe"
   ],
   "repository": "andrepolischuk/magnifier",
-  "dependencies": {
-    "offset": "0.0.1"
-  },
   "devDependencies": {
     "babel": "^5.5.6"
   },
