@@ -24,11 +24,11 @@ export default class Magnifier {
     insertAfter(this.lens, this.el);
     this.move = this.onmove.bind(this);
     this.show();
-    this.getRatio();
+    this.getImageSize();
     this.bind();
   }
 
-  getRatio() {
+  getImageSize() {
     const orig = document.createElement('img');
     orig.style.position = 'absolute';
     orig.style.width = 'auto';
@@ -36,8 +36,8 @@ export default class Magnifier {
     orig.src = this.el.src;
 
     orig.onload = () => {
-      this.ratioX = orig.offsetWidth / this.el.offsetWidth;
-      this.ratioY = orig.offsetHeight / this.el.offsetHeight;
+      this.imageWidth = orig.offsetWidth;
+      this.imageHeight = orig.offsetHeight;
       orig.parentNode.removeChild(orig);
       this.hide();
       this.lens.style.visibility = 'visible';
@@ -50,11 +50,12 @@ export default class Magnifier {
   onmove(event) {
     event = event.type === 'touchmove' ? event.changedTouches[0] : event;
     const {pageX, pageY} = event;
-    const {ratioX, ratioY} = this;
     const {left, top} = offset(this.el);
 
     if (!isInside(this.el, event)) return this.hide();
 
+    const ratioX = this.imageWidth / this.el.offsetWidth;
+    const ratioY = this.imageHeight / this.el.offsetHeight;
     const imageX = (left - pageX) * ratioX + this.lens.offsetWidth / 2;
     const imageY = (top - pageY) * ratioY + this.lens.offsetHeight / 2;
     let x = pageX - this.lens.offsetWidth / 2;
