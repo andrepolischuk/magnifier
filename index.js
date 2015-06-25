@@ -48,6 +48,7 @@ export default class Magnifier {
   }
 
   onmove(event) {
+    event.preventDefault();
     event = event.type === 'touchmove' ? event.changedTouches[0] : event;
     const {pageX, pageY} = event;
     const {left, top} = offset(this.el);
