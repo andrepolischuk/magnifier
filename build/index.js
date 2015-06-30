@@ -12,10 +12,7 @@ var lens = new _magnifier2['default']('.image img');
 },{"magnifier":2}],2:[function(require,module,exports){
 
 /**
- * Expose magnifier
- *
- * @param {Element} el
- * @api public
+ * Module dependencies
  */
 
 'use strict';
@@ -26,7 +23,24 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _globalOffset = require('global-offset');
+
+var _globalOffset2 = _interopRequireDefault(_globalOffset);
+
+var _isPointerInside = require('is-pointer-inside');
+
+var _isPointerInside2 = _interopRequireDefault(_isPointerInside);
+
+/**
+ * Expose magnifier
+ *
+ * @param {Element} el
+ * @api public
+ */
 
 var Magnifier = (function () {
   function Magnifier(el) {
@@ -45,18 +59,27 @@ var Magnifier = (function () {
     this.lens.style.overflow = 'hidden';
     this.lens.style.visibility = 'hidden';
     this.className = 'magnifier';
-    insertAfter(this.lens, this.el);
+    this.append();
+    this.show();
+    this.calcImageSize();
     this.events = {};
     this.events.onmove = this.onmove.bind(this);
     this.events.onend = this.hide.bind(this);
-    this.show();
-    this.getImageSize();
     this.bind();
   }
 
   _createClass(Magnifier, [{
-    key: 'getImageSize',
-    value: function getImageSize() {
+    key: 'append',
+    value: function append() {
+      var parent = this.el.parentNode;
+      var next = this.el.nextSibling;
+      while (next && next.nodeType > 1) next = next.nextSibling;
+      if (!next) return parent.appendChild(this.lens);
+      return parent.insertBefore(this.lens, next);
+    }
+  }, {
+    key: 'calcImageSize',
+    value: function calcImageSize() {
       var _this = this;
 
       var orig = document.createElement('img');
@@ -81,28 +104,31 @@ var Magnifier = (function () {
     value: function onmove(event) {
       event.preventDefault();
       event = event.type.indexOf('touch') === 0 ? event.changedTouches[0] : event;
+
+      if (!(0, _isPointerInside2['default'])(this.el, event)) return this.hide();
+      this.show();
+
       var pageX = event.pageX;
       var pageY = event.pageY;
 
-      var _offset = offset(this.el);
+      var _offset = (0, _globalOffset2['default'])(this.el);
 
       var left = _offset.left;
       var top = _offset.top;
+      var _el = this.el;
+      var offsetLeft = _el.offsetLeft;
+      var offsetTop = _el.offsetTop;
+      var offsetWidth = _el.offsetWidth;
+      var offsetHeight = _el.offsetHeight;
 
-      if (!isInside(this.el, event)) return this.hide();
-      this.show();
-
-      var ratioX = this.imageWidth / this.el.offsetWidth;
-      var ratioY = this.imageHeight / this.el.offsetHeight;
-      var imageX = (left - pageX) * ratioX + this.lens.offsetWidth / 2;
-      var imageY = (top - pageY) * ratioY + this.lens.offsetHeight / 2;
-      var x = pageX - this.lens.offsetWidth / 2;
-      var y = pageY - this.lens.offsetHeight / 2;
-
-      if (!isStatic(this.el)) {
-        x -= left - this.el.offsetLeft;
-        y -= top - this.el.offsetTop;
-      }
+      var lensWidth = this.lens.offsetWidth;
+      var lensHeight = this.lens.offsetHeight;
+      var ratioX = this.imageWidth / offsetWidth;
+      var ratioY = this.imageHeight / offsetHeight;
+      var imageX = (left - pageX) * ratioX + lensWidth / 2 - 2;
+      var imageY = (top - pageY) * ratioY + lensHeight / 2 - 2;
+      var x = pageX - lensWidth / 2 - (left !== offsetLeft ? left - offsetLeft : 0);
+      var y = pageY - lensHeight / 2 - (top !== offsetTop ? top - offsetTop : 0);
 
       this.lens.style.left = x + 'px';
       this.lens.style.top = y + 'px';
@@ -150,75 +176,26 @@ var Magnifier = (function () {
 })();
 
 exports['default'] = Magnifier;
+module.exports = exports['default'];
+
+
+},{"global-offset":3,"is-pointer-inside":4}],3:[function(require,module,exports){
 
 /**
- * Insert after
- *
- * @param {Element} el
- * @param {Element} ref
- * @return {Element}
- * @api private
- */
-
-function insertAfter(el, ref) {
-  var parent = ref.parentNode;
-  var next = ref.nextSibling;
-  while (next && next.nodeType > 1) next = next.nextSibling;
-  if (!next) return parent.appendChild(el);
-  return parent.insertBefore(el, next);
-}
-
-/**
- * Detect pointer event is inside
- *
- * @param {Element} el
- * @param {Event} event
- * @return {Boolean}
- * @api private
- */
-
-function isInside(el, event) {
-  var pageX = event.pageX;
-  var pageY = event.pageY;
-
-  var _offset2 = offset(el);
-
-  var left = _offset2.left;
-  var top = _offset2.top;
-  var offsetWidth = el.offsetWidth;
-  var offsetHeight = el.offsetHeight;
-
-  return pageX >= left && pageX <= left + offsetWidth && pageY >= top && pageY <= top + offsetHeight;
-}
-
-/**
- * Detect element is static
- *
- * @param {Element} el
- * @return {Boolean}
- * @api private
- */
-
-function isStatic(el) {
-  var _offset3 = offset(el);
-
-  var left = _offset3.left;
-  var top = _offset3.top;
-  var offsetLeft = el.offsetLeft;
-  var offsetTop = el.offsetTop;
-
-  return left === offsetLeft && top === offsetTop;
-}
-
-/**
- * Global offset
+ * Expose global offset
  *
  * @param {Element} el
  * @return {Object}
- * @api private
+ * @api public
  */
 
-function offset(el) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports["default"] = function (el) {
   var left = 0;
   var top = 0;
 
@@ -229,8 +206,53 @@ function offset(el) {
   }
 
   return { left: left, top: top };
-}
+};
+
+module.exports = exports["default"];
+
+
+},{}],4:[function(require,module,exports){
+
+/**
+ * Module dependencies
+ */
+
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _globalOffset = require('global-offset');
+
+var _globalOffset2 = _interopRequireDefault(_globalOffset);
+
+/**
+ * Expose detection
+ *
+ * @param {Element} el
+ * @param {Object} event
+ * @return {Boolean}
+ * @api public
+ */
+
+exports['default'] = function (el, _ref) {
+  var pageX = _ref.pageX;
+  var pageY = _ref.pageY;
+
+  var _offset = (0, _globalOffset2['default'])(el);
+
+  var left = _offset.left;
+  var top = _offset.top;
+  var offsetWidth = el.offsetWidth;
+  var offsetHeight = el.offsetHeight;
+
+  return pageX >= left && pageX <= left + offsetWidth && pageY >= top && pageY <= top + offsetHeight;
+};
+
 module.exports = exports['default'];
 
 
-},{}]},{},[1]);
+},{"global-offset":3}]},{},[1]);
