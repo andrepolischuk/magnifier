@@ -1,5 +1,12 @@
 
 /**
+ * Module dependencies
+ */
+
+import offset from 'global-offset';
+import isPointerInside from 'is-pointer-inside';
+
+/**
  * Expose magnifier
  *
  * @param {Element} el
@@ -57,17 +64,11 @@ export default class Magnifier {
     this.lens.appendChild(orig);
   }
 
-  isPositionStatic() {
-    const {left, top} = offset(this.el);
-    const {offsetLeft, offsetTop} = this.el;
-    return left === offsetLeft && top === offsetTop;
-  }
-
   onmove(event) {
     event.preventDefault();
     event = event.type.indexOf('touch') === 0 ? event.changedTouches[0] : event;
 
-    if (!isInside(this.el, event)) return this.hide();
+    if (!isPointerInside(this.el, event)) return this.hide();
     this.show();
 
     const {pageX, pageY} = event;
@@ -79,13 +80,8 @@ export default class Magnifier {
     const ratioY = this.imageHeight / offsetHeight;
     const imageX = (left - pageX) * ratioX + lensWidth / 2;
     const imageY = (top - pageY) * ratioY + lensHeight / 2;
-    let x = pageX - lensWidth / 2;
-    let y = pageY - lensHeight / 2;
-
-    if (!this.isPositionStatic()) {
-      x -= left - offsetLeft;
-      y -= top - offsetTop;
-    }
+    const x = pageX - lensWidth / 2 - (left !== offsetLeft ? left - offsetLeft : 0);
+    const y = pageY - lensHeight / 2 - (top !== offsetTop ? top - offsetTop : 0);
 
     this.lens.style.left = `${x}px`;
     this.lens.style.top = `${y}px`;
@@ -123,42 +119,4 @@ export default class Magnifier {
     this.lens.style.display = 'none';
     return this;
   }
-}
-
-/**
- * Detect pointer event is inside
- *
- * @param {Element} el
- * @param {Event} event
- * @return {Boolean}
- * @api private
- */
-
-function isInside(el, event) {
-  const {pageX, pageY} = event;
-  const {left, top} = offset(el);
-  const {offsetWidth, offsetHeight} = el;
-  return pageX >= left && pageX <= left + offsetWidth &&
-    pageY >= top && pageY <= top + offsetHeight;
-}
-
-/**
- * Global offset
- *
- * @param {Element} el
- * @return {Object}
- * @api private
- */
-
-function offset(el) {
-  let left = 0;
-  let top = 0;
-
-  while(el) {
-    left += el.offsetLeft;
-    top += el.offsetTop;
-    el = el.offsetParent;
-  }
-
-  return {left, top};
 }
