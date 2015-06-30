@@ -21,16 +21,24 @@ export default class Magnifier {
     this.lens.style.overflow = 'hidden';
     this.lens.style.visibility = 'hidden';
     this.className = 'magnifier';
-    insertAfter(this.lens, this.el);
+    this.append();
+    this.show();
+    this.calcImageSize();
     this.events = {};
     this.events.onmove = this.onmove.bind(this);
     this.events.onend = this.hide.bind(this);
-    this.show();
-    this.getImageSize();
     this.bind();
   }
 
-  getImageSize() {
+  append() {
+    const parent = this.el.parentNode;
+    let next = this.el.nextSibling;
+    while (next && next.nodeType > 1) next = next.nextSibling;
+    if (!next) return parent.appendChild(this.lens);
+    return parent.insertBefore(this.lens, next);
+  }
+
+  calcImageSize() {
     const orig = document.createElement('img');
     orig.style.position = 'absolute';
     orig.style.width = 'auto';
@@ -49,25 +57,34 @@ export default class Magnifier {
     this.lens.appendChild(orig);
   }
 
+  isPositionStatic() {
+    const {left, top} = offset(this.el);
+    const {offsetLeft, offsetTop} = this.el;
+    return left === offsetLeft && top === offsetTop;
+  }
+
   onmove(event) {
     event.preventDefault();
     event = event.type.indexOf('touch') === 0 ? event.changedTouches[0] : event;
-    const {pageX, pageY} = event;
-    const {left, top} = offset(this.el);
 
     if (!isInside(this.el, event)) return this.hide();
     this.show();
 
-    const ratioX = this.imageWidth / this.el.offsetWidth;
-    const ratioY = this.imageHeight / this.el.offsetHeight;
-    const imageX = (left - pageX) * ratioX + this.lens.offsetWidth / 2;
-    const imageY = (top - pageY) * ratioY + this.lens.offsetHeight / 2;
-    let x = pageX - this.lens.offsetWidth / 2;
-    let y = pageY - this.lens.offsetHeight / 2;
+    const {pageX, pageY} = event;
+    const {left, top} = offset(this.el);
+    const {offsetLeft, offsetTop, offsetWidth, offsetHeight} = this.el;
+    const lensWidth = this.lens.offsetWidth;
+    const lensHeight = this.lens.offsetHeight;
+    const ratioX = this.imageWidth / offsetWidth;
+    const ratioY = this.imageHeight / offsetHeight;
+    const imageX = (left - pageX) * ratioX + lensWidth / 2;
+    const imageY = (top - pageY) * ratioY + lensHeight / 2;
+    let x = pageX - lensWidth / 2;
+    let y = pageY - lensHeight / 2;
 
-    if (!isStatic(this.el)) {
-      x -= left - this.el.offsetLeft;
-      y -= top - this.el.offsetTop;
+    if (!this.isPositionStatic()) {
+      x -= left - offsetLeft;
+      y -= top - offsetTop;
     }
 
     this.lens.style.left = `${x}px`;
@@ -109,23 +126,6 @@ export default class Magnifier {
 }
 
 /**
- * Insert after
- *
- * @param {Element} el
- * @param {Element} ref
- * @return {Element}
- * @api private
- */
-
-function insertAfter(el, ref) {
-  const parent = ref.parentNode;
-  let next = ref.nextSibling;
-  while (next && next.nodeType > 1) next = next.nextSibling;
-  if (!next) return parent.appendChild(el);
-  return parent.insertBefore(el, next);
-}
-
-/**
  * Detect pointer event is inside
  *
  * @param {Element} el
@@ -140,20 +140,6 @@ function isInside(el, event) {
   const {offsetWidth, offsetHeight} = el;
   return pageX >= left && pageX <= left + offsetWidth &&
     pageY >= top && pageY <= top + offsetHeight;
-}
-
-/**
- * Detect element is static
- *
- * @param {Element} el
- * @return {Boolean}
- * @api private
- */
-
-function isStatic(el) {
-  const {left, top} = offset(el);
-  const {offsetLeft, offsetTop} = el;
-  return left === offsetLeft && top === offsetTop;
 }
 
 /**
