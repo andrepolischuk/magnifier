@@ -78,8 +78,8 @@ export default class Magnifier {
     const lensHeight = this.lens.offsetHeight;
     const ratioX = this.imageWidth / offsetWidth;
     const ratioY = this.imageHeight / offsetHeight;
-    const imageX = (left - pageX) * ratioX + lensWidth / 2;
-    const imageY = (top - pageY) * ratioY + lensHeight / 2;
+    const imageX = (left - pageX) * ratioX + lensWidth / 2 - 2;
+    const imageY = (top - pageY) * ratioY + lensHeight / 2 - 2;
     const x = pageX - lensWidth / 2 - (left !== offsetLeft ? left - offsetLeft : 0);
     const y = pageY - lensHeight / 2 - (top !== offsetTop ? top - offsetTop : 0);
 
