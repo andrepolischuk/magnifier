@@ -27,7 +27,7 @@ export default class Magnifier {
     this.lens.style.backgroundRepeat = 'no-repeat';
     this.lens.style.overflow = 'hidden';
     this.lens.style.visibility = 'hidden';
-    this.className = 'magnifier';
+    this.lens.className = 'magnifier';
     this.append();
     this.show();
     this.calcImageSize();
