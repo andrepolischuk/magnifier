@@ -7,9 +7,86 @@ var _magnifier = require('magnifier');
 
 var _magnifier2 = _interopRequireDefault(_magnifier);
 
-var lens = new _magnifier2['default']('.image img');
+var map = new _magnifier2['default']('.image-map');
+var sea = new _magnifier2['default']('.image-sea');
 
-},{"magnifier":2}],2:[function(require,module,exports){
+},{"magnifier":4}],2:[function(require,module,exports){
+
+/**
+ * Expose global offset
+ *
+ * @param {Element} el
+ * @return {Object}
+ * @api public
+ */
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports["default"] = function (el) {
+  var left = 0;
+  var top = 0;
+
+  while (el) {
+    left += el.offsetLeft;
+    top += el.offsetTop;
+    el = el.offsetParent;
+  }
+
+  return { left: left, top: top };
+};
+
+module.exports = exports["default"];
+
+
+},{}],3:[function(require,module,exports){
+
+/**
+ * Module dependencies
+ */
+
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _globalOffset = require('global-offset');
+
+var _globalOffset2 = _interopRequireDefault(_globalOffset);
+
+/**
+ * Expose detection
+ *
+ * @param {Element} el
+ * @param {Object} event
+ * @return {Boolean}
+ * @api public
+ */
+
+exports['default'] = function (el, _ref) {
+  var pageX = _ref.pageX;
+  var pageY = _ref.pageY;
+
+  var _offset = (0, _globalOffset2['default'])(el);
+
+  var left = _offset.left;
+  var top = _offset.top;
+  var offsetWidth = el.offsetWidth;
+  var offsetHeight = el.offsetHeight;
+
+  return pageX >= left && pageX <= left + offsetWidth && pageY >= top && pageY <= top + offsetHeight;
+};
+
+module.exports = exports['default'];
+
+
+},{"global-offset":2}],4:[function(require,module,exports){
 
 /**
  * Module dependencies
@@ -58,13 +135,12 @@ var Magnifier = (function () {
     this.lens.style.backgroundRepeat = 'no-repeat';
     this.lens.style.overflow = 'hidden';
     this.lens.style.visibility = 'hidden';
-    this.className = 'magnifier';
+    this.lens.className = 'magnifier';
     this.append();
     this.show();
     this.calcImageSize();
-    this.events = {};
-    this.events.onmove = this.onmove.bind(this);
-    this.events.onend = this.hide.bind(this);
+    this.onmove = this.onmove.bind(this);
+    this.onend = this.hide.bind(this);
     this.bind();
   }
 
@@ -120,9 +196,10 @@ var Magnifier = (function () {
       var offsetTop = _el.offsetTop;
       var offsetWidth = _el.offsetWidth;
       var offsetHeight = _el.offsetHeight;
+      var _lens = this.lens;
+      var lensWidth = _lens.offsetWidth;
+      var lensHeight = _lens.offsetHeight;
 
-      var lensWidth = this.lens.offsetWidth;
-      var lensHeight = this.lens.offsetHeight;
       var ratioX = this.imageWidth / offsetWidth;
       var ratioY = this.imageHeight / offsetHeight;
       var imageX = (left - pageX) * ratioX + lensWidth / 2 - 2;
@@ -137,25 +214,25 @@ var Magnifier = (function () {
   }, {
     key: 'bind',
     value: function bind() {
-      this.el.addEventListener('touchstart', this.events.onmove, false);
-      this.el.addEventListener('mousemove', this.events.onmove, false);
-      this.el.addEventListener('touchmove', this.events.onmove, false);
-      this.el.addEventListener('touchend', this.events.onend, false);
-      this.lens.addEventListener('mousemove', this.events.onmove, false);
-      this.lens.addEventListener('touchmove', this.events.onmove, false);
-      this.lens.addEventListener('touchend', this.events.onend, false);
+      this.el.addEventListener('touchstart', this.onmove, false);
+      this.el.addEventListener('mousemove', this.onmove, false);
+      this.el.addEventListener('touchmove', this.onmove, false);
+      this.el.addEventListener('touchend', this.onend, false);
+      this.lens.addEventListener('mousemove', this.onmove, false);
+      this.lens.addEventListener('touchmove', this.onmove, false);
+      this.lens.addEventListener('touchend', this.onend, false);
       return this;
     }
   }, {
     key: 'unbind',
     value: function unbind() {
-      this.el.removeEventListener('touchstart', this.events.onmove, false);
-      this.el.removeEventListener('mousemove', this.events.onmove, false);
-      this.el.removeEventListener('touchmove', this.events.onmove, false);
-      this.el.removeEventListener('touchend', this.events.onend, false);
-      this.lens.removeEventListener('mousemove', this.events.onmove, false);
-      this.lens.removeEventListener('touchmove', this.events.onmove, false);
-      this.lens.removeEventListener('touchend', this.events.onend, false);
+      this.el.removeEventListener('touchstart', this.onmove, false);
+      this.el.removeEventListener('mousemove', this.onmove, false);
+      this.el.removeEventListener('touchmove', this.onmove, false);
+      this.el.removeEventListener('touchend', this.onend, false);
+      this.lens.removeEventListener('mousemove', this.onmove, false);
+      this.lens.removeEventListener('touchmove', this.onmove, false);
+      this.lens.removeEventListener('touchend', this.onend, false);
       return this;
     }
   }, {
@@ -179,80 +256,4 @@ exports['default'] = Magnifier;
 module.exports = exports['default'];
 
 
-},{"global-offset":3,"is-pointer-inside":4}],3:[function(require,module,exports){
-
-/**
- * Expose global offset
- *
- * @param {Element} el
- * @return {Object}
- * @api public
- */
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-exports["default"] = function (el) {
-  var left = 0;
-  var top = 0;
-
-  while (el) {
-    left += el.offsetLeft;
-    top += el.offsetTop;
-    el = el.offsetParent;
-  }
-
-  return { left: left, top: top };
-};
-
-module.exports = exports["default"];
-
-
-},{}],4:[function(require,module,exports){
-
-/**
- * Module dependencies
- */
-
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _globalOffset = require('global-offset');
-
-var _globalOffset2 = _interopRequireDefault(_globalOffset);
-
-/**
- * Expose detection
- *
- * @param {Element} el
- * @param {Object} event
- * @return {Boolean}
- * @api public
- */
-
-exports['default'] = function (el, _ref) {
-  var pageX = _ref.pageX;
-  var pageY = _ref.pageY;
-
-  var _offset = (0, _globalOffset2['default'])(el);
-
-  var left = _offset.left;
-  var top = _offset.top;
-  var offsetWidth = el.offsetWidth;
-  var offsetHeight = el.offsetHeight;
-
-  return pageX >= left && pageX <= left + offsetWidth && pageY >= top && pageY <= top + offsetHeight;
-};
-
-module.exports = exports['default'];
-
-
-},{"global-offset":3}]},{},[1]);
+},{"global-offset":2,"is-pointer-inside":3}]},{},[1]);

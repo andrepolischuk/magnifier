@@ -1,3 +1,5 @@
 
 import Magnifier from 'magnifier';
-const lens = new Magnifier('.image img');
+
+const map = new Magnifier('.image-map');
+const sea = new Magnifier('.image-sea');
