@@ -31,9 +31,8 @@ export default class Magnifier {
     this.append();
     this.show();
     this.calcImageSize();
-    this.events = {};
-    this.events.onmove = this.onmove.bind(this);
-    this.events.onend = this.hide.bind(this);
+    this.onmove = this.onmove.bind(this);
+    this.onend = this.hide.bind(this);
     this.bind();
   }
 
@@ -74,8 +73,7 @@ export default class Magnifier {
     const {pageX, pageY} = event;
     const {left, top} = offset(this.el);
     const {offsetLeft, offsetTop, offsetWidth, offsetHeight} = this.el;
-    const lensWidth = this.lens.offsetWidth;
-    const lensHeight = this.lens.offsetHeight;
+    const {offsetWidth: lensWidth, offsetHeight: lensHeight} = this.lens;
     const ratioX = this.imageWidth / offsetWidth;
     const ratioY = this.imageHeight / offsetHeight;
     const imageX = (left - pageX) * ratioX + lensWidth / 2 - 2;
@@ -89,24 +87,24 @@ export default class Magnifier {
   }
 
   bind() {
-    this.el.addEventListener('touchstart', this.events.onmove, false);
-    this.el.addEventListener('mousemove', this.events.onmove, false);
-    this.el.addEventListener('touchmove', this.events.onmove, false);
-    this.el.addEventListener('touchend', this.events.onend, false);
-    this.lens.addEventListener('mousemove', this.events.onmove, false);
-    this.lens.addEventListener('touchmove', this.events.onmove, false);
-    this.lens.addEventListener('touchend', this.events.onend, false);
+    this.el.addEventListener('touchstart', this.onmove, false);
+    this.el.addEventListener('mousemove', this.onmove, false);
+    this.el.addEventListener('touchmove', this.onmove, false);
+    this.el.addEventListener('touchend', this.onend, false);
+    this.lens.addEventListener('mousemove', this.onmove, false);
+    this.lens.addEventListener('touchmove', this.onmove, false);
+    this.lens.addEventListener('touchend', this.onend, false);
     return this;
   }
 
   unbind() {
-    this.el.removeEventListener('touchstart', this.events.onmove, false);
-    this.el.removeEventListener('mousemove', this.events.onmove, false);
-    this.el.removeEventListener('touchmove', this.events.onmove, false);
-    this.el.removeEventListener('touchend', this.events.onend, false);
-    this.lens.removeEventListener('mousemove', this.events.onmove, false);
-    this.lens.removeEventListener('touchmove', this.events.onmove, false);
-    this.lens.removeEventListener('touchend', this.events.onend, false);
+    this.el.removeEventListener('touchstart', this.onmove, false);
+    this.el.removeEventListener('mousemove', this.onmove, false);
+    this.el.removeEventListener('touchmove', this.onmove, false);
+    this.el.removeEventListener('touchend', this.onend, false);
+    this.lens.removeEventListener('mousemove', this.onmove, false);
+    this.lens.removeEventListener('touchmove', this.onmove, false);
+    this.lens.removeEventListener('touchend', this.onend, false);
     return this;
   }
 
