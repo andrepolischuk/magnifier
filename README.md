@@ -12,7 +12,8 @@ npm install --save magnifier
 
 ```js
 var Magnifier = require('magnifier');
-var lens = new Magnifier('.image');
+
+new Magnifier('.image');
 ```
 
 ## License
