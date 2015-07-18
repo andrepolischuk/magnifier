@@ -1,4 +1,5 @@
 import offset from 'global-offset';
+import insertAfter from 'insert-after';
 import isPointerInside from 'is-pointer-inside';
 
 export default class Magnifier {
@@ -16,20 +17,12 @@ export default class Magnifier {
     this.lens.style.overflow = 'hidden';
     this.lens.style.visibility = 'hidden';
     this.lens.className = 'magnifier';
-    this.append();
+    insertAfter(this.lens, this.el);
     this.show();
     this.calcImageSize();
     this.onmove = this.onmove.bind(this);
     this.onend = this.hide.bind(this);
     this.bind();
-  }
-
-  append() {
-    const parent = this.el.parentNode;
-    let next = this.el.nextSibling;
-    while (next && next.nodeType > 1) next = next.nextSibling;
-    if (!next) return parent.appendChild(this.lens);
-    return parent.insertBefore(this.lens, next);
   }
 
   calcImageSize() {
