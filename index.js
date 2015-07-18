@@ -1,17 +1,5 @@
-
-/**
- * Module dependencies
- */
-
 import offset from 'global-offset';
 import isPointerInside from 'is-pointer-inside';
-
-/**
- * Expose magnifier
- *
- * @param {Element} el
- * @api public
- */
 
 export default class Magnifier {
   constructor(el) {
@@ -66,10 +54,8 @@ export default class Magnifier {
   onmove(event) {
     event.preventDefault();
     event = event.type.indexOf('touch') === 0 ? event.changedTouches[0] : event;
-
     if (!isPointerInside(this.el, event)) return this.hide();
     this.show();
-
     const {pageX, pageY} = event;
     const {left, top} = offset(this.el);
     const {offsetLeft, offsetTop, offsetWidth, offsetHeight} = this.el;
@@ -80,7 +66,6 @@ export default class Magnifier {
     const imageY = (top - pageY) * ratioY + lensHeight / 2 - 2;
     const x = pageX - lensWidth / 2 - (left !== offsetLeft ? left - offsetLeft : 0);
     const y = pageY - lensHeight / 2 - (top !== offsetTop ? top - offsetTop : 0);
-
     this.lens.style.left = `${x}px`;
     this.lens.style.top = `${y}px`;
     this.lens.style.backgroundPosition = `${imageX}px ${imageY}px`;
