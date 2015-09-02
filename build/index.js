@@ -10,7 +10,7 @@ var _magnifier2 = _interopRequireDefault(_magnifier);
 var map = new _magnifier2['default']('.image-map');
 var sea = new _magnifier2['default']('.image-sea');
 
-},{"magnifier":4}],2:[function(require,module,exports){
+},{"magnifier":5}],2:[function(require,module,exports){
 
 /**
  * Expose global offset
@@ -43,11 +43,24 @@ module.exports = exports["default"];
 
 
 },{}],3:[function(require,module,exports){
+"use strict";
 
-/**
- * Module dependencies
- */
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
+exports["default"] = function (node, ref) {
+  var parent = ref.parentNode;
+  var next = ref.nextSibling;
+  while (next && next.nodeType > 1) next = next.nextSibling;
+  if (!next) return parent.appendChild(node);
+  return parent.insertBefore(node, next);
+};
+
+module.exports = exports["default"];
+
+
+},{}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -59,15 +72,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 var _globalOffset = require('global-offset');
 
 var _globalOffset2 = _interopRequireDefault(_globalOffset);
-
-/**
- * Expose detection
- *
- * @param {Element} el
- * @param {Object} event
- * @return {Boolean}
- * @api public
- */
 
 exports['default'] = function (el, _ref) {
   var pageX = _ref.pageX;
@@ -86,12 +90,7 @@ exports['default'] = function (el, _ref) {
 module.exports = exports['default'];
 
 
-},{"global-offset":2}],4:[function(require,module,exports){
-
-/**
- * Module dependencies
- */
-
+},{"global-offset":2}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -108,16 +107,13 @@ var _globalOffset = require('global-offset');
 
 var _globalOffset2 = _interopRequireDefault(_globalOffset);
 
+var _insertAfter = require('insert-after');
+
+var _insertAfter2 = _interopRequireDefault(_insertAfter);
+
 var _isPointerInside = require('is-pointer-inside');
 
 var _isPointerInside2 = _interopRequireDefault(_isPointerInside);
-
-/**
- * Expose magnifier
- *
- * @param {Element} el
- * @api public
- */
 
 var Magnifier = (function () {
   function Magnifier(el) {
@@ -136,7 +132,7 @@ var Magnifier = (function () {
     this.lens.style.overflow = 'hidden';
     this.lens.style.visibility = 'hidden';
     this.lens.className = 'magnifier';
-    this.append();
+    (0, _insertAfter2['default'])(this.lens, this.el);
     this.show();
     this.calcImageSize();
     this.onmove = this.onmove.bind(this);
@@ -145,15 +141,6 @@ var Magnifier = (function () {
   }
 
   _createClass(Magnifier, [{
-    key: 'append',
-    value: function append() {
-      var parent = this.el.parentNode;
-      var next = this.el.nextSibling;
-      while (next && next.nodeType > 1) next = next.nextSibling;
-      if (!next) return parent.appendChild(this.lens);
-      return parent.insertBefore(this.lens, next);
-    }
-  }, {
     key: 'calcImageSize',
     value: function calcImageSize() {
       var _this = this;
@@ -180,12 +167,11 @@ var Magnifier = (function () {
     value: function onmove(event) {
       event.preventDefault();
       event = event.type.indexOf('touch') === 0 ? event.changedTouches[0] : event;
-
       if (!(0, _isPointerInside2['default'])(this.el, event)) return this.hide();
       this.show();
-
-      var pageX = event.pageX;
-      var pageY = event.pageY;
+      var _event = event;
+      var pageX = _event.pageX;
+      var pageY = _event.pageY;
 
       var _offset = (0, _globalOffset2['default'])(this.el);
 
@@ -206,7 +192,6 @@ var Magnifier = (function () {
       var imageY = (top - pageY) * ratioY + lensHeight / 2 - 2;
       var x = pageX - lensWidth / 2 - (left !== offsetLeft ? left - offsetLeft : 0);
       var y = pageY - lensHeight / 2 - (top !== offsetTop ? top - offsetTop : 0);
-
       this.lens.style.left = x + 'px';
       this.lens.style.top = y + 'px';
       this.lens.style.backgroundPosition = imageX + 'px ' + imageY + 'px';
@@ -214,11 +199,13 @@ var Magnifier = (function () {
   }, {
     key: 'bind',
     value: function bind() {
-      this.el.addEventListener('touchstart', this.onmove, false);
       this.el.addEventListener('mousemove', this.onmove, false);
+      this.el.addEventListener('mouseleave', this.onend, false);
+      this.el.addEventListener('touchstart', this.onmove, false);
       this.el.addEventListener('touchmove', this.onmove, false);
       this.el.addEventListener('touchend', this.onend, false);
       this.lens.addEventListener('mousemove', this.onmove, false);
+      this.lens.addEventListener('mouseleave', this.onend, false);
       this.lens.addEventListener('touchmove', this.onmove, false);
       this.lens.addEventListener('touchend', this.onend, false);
       return this;
@@ -226,11 +213,13 @@ var Magnifier = (function () {
   }, {
     key: 'unbind',
     value: function unbind() {
-      this.el.removeEventListener('touchstart', this.onmove, false);
       this.el.removeEventListener('mousemove', this.onmove, false);
+      this.el.removeEventListener('mouseleave', this.onend, false);
+      this.el.removeEventListener('touchstart', this.onmove, false);
       this.el.removeEventListener('touchmove', this.onmove, false);
       this.el.removeEventListener('touchend', this.onend, false);
       this.lens.removeEventListener('mousemove', this.onmove, false);
+      this.lens.removeEventListener('mouseleave', this.onend, false);
       this.lens.removeEventListener('touchmove', this.onmove, false);
       this.lens.removeEventListener('touchend', this.onend, false);
       return this;
@@ -256,4 +245,4 @@ exports['default'] = Magnifier;
 module.exports = exports['default'];
 
 
-},{"global-offset":2,"is-pointer-inside":3}]},{},[1]);
+},{"global-offset":2,"insert-after":3,"is-pointer-inside":4}]},{},[1]);
