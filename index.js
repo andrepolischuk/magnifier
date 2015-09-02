@@ -65,22 +65,26 @@ export default class Magnifier {
   }
 
   bind() {
-    this.el.addEventListener('touchstart', this.onmove, false);
     this.el.addEventListener('mousemove', this.onmove, false);
+    this.el.addEventListener('mouseleave', this.onend, false);
+    this.el.addEventListener('touchstart', this.onmove, false);
     this.el.addEventListener('touchmove', this.onmove, false);
     this.el.addEventListener('touchend', this.onend, false);
     this.lens.addEventListener('mousemove', this.onmove, false);
+    this.lens.addEventListener('mouseleave', this.onend, false);
     this.lens.addEventListener('touchmove', this.onmove, false);
     this.lens.addEventListener('touchend', this.onend, false);
     return this;
   }
 
   unbind() {
-    this.el.removeEventListener('touchstart', this.onmove, false);
     this.el.removeEventListener('mousemove', this.onmove, false);
+    this.el.removeEventListener('mouseleave', this.onend, false);
+    this.el.removeEventListener('touchstart', this.onmove, false);
     this.el.removeEventListener('touchmove', this.onmove, false);
     this.el.removeEventListener('touchend', this.onend, false);
     this.lens.removeEventListener('mousemove', this.onmove, false);
+    this.lens.removeEventListener('mouseleave', this.onend, false);
     this.lens.removeEventListener('touchmove', this.onmove, false);
     this.lens.removeEventListener('touchend', this.onend, false);
     return this;
