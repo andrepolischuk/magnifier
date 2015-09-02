@@ -20,8 +20,8 @@ export default class Magnifier {
     insertAfter(this.lens, this.el);
     this.show();
     this.calcImageSize();
-    this.onmove = this.onmove.bind(this);
-    this.onend = this.hide.bind(this);
+    this.onmove = ::this.onmove;
+    this.onend = ::this.hide;
     this.bind();
   }
 
