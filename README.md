@@ -1,6 +1,6 @@
 # magnifier
 
-  > Magnifier an image
+> Magnifier an image
 
 ## Install
 
@@ -12,10 +12,9 @@ npm install --save magnifier
 
 ```js
 var Magnifier = require('magnifier');
-
 new Magnifier('.image');
 ```
 
 ## License
 
-  MIT
+MIT
