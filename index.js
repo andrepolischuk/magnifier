@@ -1,3 +1,4 @@
+import autobind from 'autobind-decorator';
 import offset from 'global-offset';
 import insertAfter from 'insert-after';
 import isPointerInside from 'is-pointer-inside';
@@ -26,8 +27,6 @@ export default class Magnifier {
     insertAfter(this.lens, this.el);
     this.show();
     this.calcImageSize();
-    this.onmove = ::this.onmove;
-    this.onend = ::this.hide;
     this.bind();
   }
 
@@ -50,6 +49,7 @@ export default class Magnifier {
     this.lens.appendChild(orig);
   }
 
+  @autobind
   onmove(event) {
     event.preventDefault();
     event = event.type.indexOf('touch') === 0 ? event.changedTouches[0] : event;
@@ -68,6 +68,11 @@ export default class Magnifier {
     this.lens.style.left = `${x}px`;
     this.lens.style.top = `${y}px`;
     this.lens.style.backgroundPosition = `${imageX}px ${imageY}px`;
+  }
+
+  @autobind
+  onend() {
+    this.hide();
   }
 
   bind() {
