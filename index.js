@@ -1,7 +1,7 @@
 import autobind from 'autobind-decorator';
-import offset from 'global-offset';
 import insertAfter from 'insert-after';
 import isPointerInside from 'is-pointer-inside';
+import offset from 'global-offset';
 
 export default class Magnifier {
   props = {
@@ -36,43 +36,8 @@ export default class Magnifier {
     orig.style.width = 'auto';
     orig.style.visibility = 'hidden';
     orig.src = this.el.src;
-
-    orig.onload = () => {
-      this.imageWidth = orig.offsetWidth;
-      this.imageHeight = orig.offsetHeight;
-      orig.parentNode.removeChild(orig);
-      this.hide();
-      this.lens.style.visibility = 'visible';
-      this.lens.style.backgroundImage = `url(${this.el.src})`;
-    };
-
+    orig.onload = this.onload;
     this.lens.appendChild(orig);
-  }
-
-  @autobind
-  onmove(event) {
-    event.preventDefault();
-    event = event.type.indexOf('touch') === 0 ? event.changedTouches[0] : event;
-    if (!isPointerInside(this.el, event)) return this.hide();
-    this.show();
-    const {pageX, pageY} = event;
-    const {left, top} = offset(this.el);
-    const {offsetLeft, offsetTop, offsetWidth, offsetHeight} = this.el;
-    const {width, height, borderWidth} = this.props;
-    const ratioX = this.imageWidth / offsetWidth;
-    const ratioY = this.imageHeight / offsetHeight;
-    const imageX = (left - pageX) * ratioX + width / 2 - borderWidth;
-    const imageY = (top - pageY) * ratioY + height / 2 - borderWidth;
-    const x = pageX - width / 2 - (left !== offsetLeft ? left - offsetLeft : 0);
-    const y = pageY - height / 2 - (top !== offsetTop ? top - offsetTop : 0);
-    this.lens.style.left = `${x}px`;
-    this.lens.style.top = `${y}px`;
-    this.lens.style.backgroundPosition = `${imageX}px ${imageY}px`;
-  }
-
-  @autobind
-  onend() {
-    this.hide();
   }
 
   bind() {
@@ -99,6 +64,43 @@ export default class Magnifier {
     this.lens.removeEventListener('touchmove', this.onmove, false);
     this.lens.removeEventListener('touchend', this.onend, false);
     return this;
+  }
+
+  @autobind
+  onload() {
+    const orig = this.lens.getElementsByTagName('img')[0];
+    this.imageWidth = orig.offsetWidth;
+    this.imageHeight = orig.offsetHeight;
+    this.hide();
+    this.lens.style.visibility = 'visible';
+    this.lens.style.backgroundImage = `url(${this.el.src})`;
+    this.lens.removeChild(orig);
+  }
+
+  @autobind
+  onmove(event) {
+    event.preventDefault();
+    event = event.type.indexOf('touch') === 0 ? event.changedTouches[0] : event;
+    if (!isPointerInside(this.el, event)) return this.hide();
+    this.show();
+    const {pageX, pageY} = event;
+    const {left, top} = offset(this.el);
+    const {offsetLeft, offsetTop, offsetWidth, offsetHeight} = this.el;
+    const {width, height, borderWidth} = this.props;
+    const ratioX = this.imageWidth / offsetWidth;
+    const ratioY = this.imageHeight / offsetHeight;
+    const imageX = (left - pageX) * ratioX + width / 2 - borderWidth;
+    const imageY = (top - pageY) * ratioY + height / 2 - borderWidth;
+    const x = pageX - width / 2 - (left !== offsetLeft ? left - offsetLeft : 0);
+    const y = pageY - height / 2 - (top !== offsetTop ? top - offsetTop : 0);
+    this.lens.style.left = `${x}px`;
+    this.lens.style.top = `${y}px`;
+    this.lens.style.backgroundPosition = `${imageX}px ${imageY}px`;
+  }
+
+  @autobind
+  onend() {
+    this.hide();
   }
 
   height(n) {
