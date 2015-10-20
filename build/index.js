@@ -8,7 +8,8 @@ var _magnifier = require('magnifier');
 var _magnifier2 = _interopRequireDefault(_magnifier);
 
 var map = new _magnifier2['default']('.image-map');
-var sea = new _magnifier2['default']('.image-sea');
+
+var sea = new _magnifier2['default']('.image-sea').height(200).width(200).borderRadius(100).borderColor('#3d6985');
 
 },{"magnifier":5}],2:[function(require,module,exports){
 
@@ -49,12 +50,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-exports["default"] = function (node, ref) {
-  var parent = ref.parentNode;
-  var next = ref.nextSibling;
-  while (next && next.nodeType > 1) next = next.nextSibling;
-  if (!next) return parent.appendChild(node);
-  return parent.insertBefore(node, next);
+exports["default"] = function (node, _ref) {
+  var nextSibling = _ref.nextSibling;
+  var parentNode = _ref.parentNode;
+  return parentNode.insertBefore(node, nextSibling);
 };
 
 module.exports = exports["default"];
@@ -117,20 +116,30 @@ var _isPointerInside2 = _interopRequireDefault(_isPointerInside);
 
 var Magnifier = (function () {
   function Magnifier(el) {
+    var _this = this;
+
     _classCallCheck(this, Magnifier);
+
+    this.props = {
+      height: 150,
+      width: 150,
+      backgroundColor: '#fff',
+      borderColor: '#eee',
+      borderRadius: 75,
+      borderWidth: 2
+    };
 
     if (typeof el === 'string') el = document.querySelector(el);
     this.el = el;
     this.lens = document.createElement('div');
     this.lens.style.position = 'absolute';
-    this.lens.style.border = '2px solid #eee';
-    this.lens.style.borderRadius = '75px';
-    this.lens.style.height = '150px';
-    this.lens.style.width = '150px';
-    this.lens.style.backgroundColor = '#fff';
     this.lens.style.backgroundRepeat = 'no-repeat';
+    this.lens.style.borderStyle = 'solid';
     this.lens.style.overflow = 'hidden';
     this.lens.style.visibility = 'hidden';
+    Object.keys(this.props).forEach(function (prop) {
+      return _this.setStyle(prop, _this.props[prop]);
+    });
     this.lens.className = 'magnifier';
     (0, _insertAfter2['default'])(this.lens, this.el);
     this.show();
@@ -143,7 +152,7 @@ var Magnifier = (function () {
   _createClass(Magnifier, [{
     key: 'calcImageSize',
     value: function calcImageSize() {
-      var _this = this;
+      var _this2 = this;
 
       var orig = document.createElement('img');
       orig.style.position = 'absolute';
@@ -152,12 +161,12 @@ var Magnifier = (function () {
       orig.src = this.el.src;
 
       orig.onload = function () {
-        _this.imageWidth = orig.offsetWidth;
-        _this.imageHeight = orig.offsetHeight;
+        _this2.imageWidth = orig.offsetWidth;
+        _this2.imageHeight = orig.offsetHeight;
         orig.parentNode.removeChild(orig);
-        _this.hide();
-        _this.lens.style.visibility = 'visible';
-        _this.lens.style.backgroundImage = 'url(' + _this.el.src + ')';
+        _this2.hide();
+        _this2.lens.style.visibility = 'visible';
+        _this2.lens.style.backgroundImage = 'url(' + _this2.el.src + ')';
       };
 
       this.lens.appendChild(orig);
@@ -182,16 +191,17 @@ var Magnifier = (function () {
       var offsetTop = _el.offsetTop;
       var offsetWidth = _el.offsetWidth;
       var offsetHeight = _el.offsetHeight;
-      var _lens = this.lens;
-      var lensWidth = _lens.offsetWidth;
-      var lensHeight = _lens.offsetHeight;
+      var _props = this.props;
+      var width = _props.width;
+      var height = _props.height;
+      var borderWidth = _props.borderWidth;
 
       var ratioX = this.imageWidth / offsetWidth;
       var ratioY = this.imageHeight / offsetHeight;
-      var imageX = (left - pageX) * ratioX + lensWidth / 2 - 2;
-      var imageY = (top - pageY) * ratioY + lensHeight / 2 - 2;
-      var x = pageX - lensWidth / 2 - (left !== offsetLeft ? left - offsetLeft : 0);
-      var y = pageY - lensHeight / 2 - (top !== offsetTop ? top - offsetTop : 0);
+      var imageX = (left - pageX) * ratioX + width / 2 - borderWidth;
+      var imageY = (top - pageY) * ratioY + height / 2 - borderWidth;
+      var x = pageX - width / 2 - (left !== offsetLeft ? left - offsetLeft : 0);
+      var y = pageY - height / 2 - (top !== offsetTop ? top - offsetTop : 0);
       this.lens.style.left = x + 'px';
       this.lens.style.top = y + 'px';
       this.lens.style.backgroundPosition = imageX + 'px ' + imageY + 'px';
@@ -222,6 +232,54 @@ var Magnifier = (function () {
       this.lens.removeEventListener('mouseleave', this.onend, false);
       this.lens.removeEventListener('touchmove', this.onmove, false);
       this.lens.removeEventListener('touchend', this.onend, false);
+      return this;
+    }
+  }, {
+    key: 'height',
+    value: function height(n) {
+      return this.setProp('height', n);
+    }
+  }, {
+    key: 'width',
+    value: function width(n) {
+      return this.setProp('width', n);
+    }
+  }, {
+    key: 'backgroundColor',
+    value: function backgroundColor(color) {
+      return this.setProp('backgroundColor', color);
+    }
+  }, {
+    key: 'borderColor',
+    value: function borderColor(color) {
+      return this.setProp('borderColor', color);
+    }
+  }, {
+    key: 'borderRadius',
+    value: function borderRadius(n) {
+      return this.setProp('borderRadius', n);
+    }
+  }, {
+    key: 'borderWidth',
+    value: function borderWidth(n) {
+      return this.setProp('borderWidth', n);
+    }
+  }, {
+    key: 'setProp',
+    value: function setProp(prop, value) {
+      this.props[prop] = value;
+      this.setStyle(prop, value);
+      return this;
+    }
+  }, {
+    key: 'setStyle',
+    value: function setStyle(prop, value) {
+      this.lens.style[prop] = typeof value === 'number' ? value + 'px' : value;
+    }
+  }, {
+    key: 'className',
+    value: function className(name) {
+      this.lens.className = name;
       return this;
     }
   }, {
