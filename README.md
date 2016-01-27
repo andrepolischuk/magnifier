@@ -11,7 +11,8 @@ npm install --save magnifier
 ## Usage
 
 ```js
-var Magnifier = require('magnifier');
+import Magnifier from 'magnifier';
+
 new Magnifier('.image');
 ```
 
@@ -19,43 +20,77 @@ new Magnifier('.image');
 
 ### new Magnifier(image)
 
-Create a new `Magnifier` instance
+Create a new `Magnifier` instance.
+
+#### image
+
+Type: `element`, `string`
+
+Image for magnification.
 
 ### .height(h)
 
-Set lens height
+#### h
+
+Type: `number`, `string`
+
+Lens height.
 
 ### .width(h)
 
-Set lens width
+#### h
+
+Type: `number`, `string`
+
+Lens width.
 
 ### .backgroundColor(color)
 
-Set lens background color
+#### color
+
+Type: `string`
+
+Lens background color.
 
 ### .borderColor(color)
 
-Set lens border color
+#### color
+
+Type: `string`
+
+Lens border color.
 
 ### .borderRadius(r)
 
-Set lens radius
+#### r
+
+Type: `number`, `string`
+
+Lens radius.
 
 ### .borderWidth(w)
 
-Set lens border width
+#### w
+
+Type: `number`, `string`
+
+Lens border width.
 
 ### .className(name)
 
-Set lens class name
+#### name
+
+Type: `string`
+
+Lens class name.
 
 ### .show()
 
-Forced show lens
+Forced show lens.
 
 ### .hide()
 
-Forced hide lens
+Forced hide lens.
 
 ## License
 
