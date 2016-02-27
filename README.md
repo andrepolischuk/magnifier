@@ -2,6 +2,8 @@
 
 > Magnifier an image
 
+![](screenshot.png)
+
 ## Install
 
 ```sh
