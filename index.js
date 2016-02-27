@@ -22,6 +22,7 @@ export default class Magnifier {
     this.lens.style.borderStyle = 'solid';
     this.lens.style.overflow = 'hidden';
     this.lens.style.visibility = 'hidden';
+    this.lens.style.boxShadow = '0 1px 5px rgba(0, 0, 0, .25)';
     Object.keys(this.props).forEach(prop => this.setStyle(prop, this.props[prop]));
     this.lens.className = 'magnifier';
     insertAfter(this.lens, this.el);
