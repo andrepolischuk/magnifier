@@ -19,6 +19,9 @@
     "babel": "^5.5.6"
   },
   "main": "index.es5.js",
+  "files": [
+    "index.es5.js"
+  ],
   "scripts": {
     "transpile": "babel --stage 0 index.js > index.es5.js",
     "prepublish": "npm run transpile",
