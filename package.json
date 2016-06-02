@@ -10,7 +10,6 @@
   ],
   "repository": "andrepolischuk/magnifier",
   "dependencies": {
-    "autobind-decorator": "^1.3.2",
     "global-offset": "^0.1.1",
     "insert-after": "^0.1.0",
     "is-pointer-inside": "^0.1.0"
