@@ -1,4 +1,4 @@
-# magnifier
+# magnifier [![Build Status][travis-image]][travis-url]
 
 > Magnifier an image
 
@@ -97,3 +97,6 @@ Forced hide lens.
 ## License
 
 MIT
+
+[travis-url]: https://travis-ci.org/andrepolischuk/magnifier
+[travis-image]: https://travis-ci.org/andrepolischuk/magnifier.svg?branch=master
