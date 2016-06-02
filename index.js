@@ -1,6 +1,6 @@
+import offset from 'global-offset';
 import insertAfter from 'insert-after';
 import isPointerInside from 'is-pointer-inside';
-import offset from 'global-offset';
 
 export default class Magnifier {
   props = {
@@ -13,21 +13,20 @@ export default class Magnifier {
   };
 
   constructor(el) {
-    if (typeof el === 'string') el = document.querySelector(el);
-    this.el = el;
+    this.el = typeof el === 'string' ? document.querySelector(el) : el;
     this.lens = document.createElement('div');
+    this.lens.className = 'magnifier';
     this.lens.style.position = 'absolute';
     this.lens.style.backgroundRepeat = 'no-repeat';
     this.lens.style.borderStyle = 'solid';
     this.lens.style.overflow = 'hidden';
     this.lens.style.visibility = 'hidden';
     this.lens.style.boxShadow = '0 1px 5px rgba(0, 0, 0, .25)';
+    this.handleLoad = this.handleLoad.bind(this);
+    this.handleTouchMove = this.handleTouchMove.bind(this);
+    this.handleTouchEnd = this.handleTouchEnd.bind(this);
     Object.keys(this.props).forEach(prop => this.setStyle(prop, this.props[prop]));
-    this.lens.className = 'magnifier';
     insertAfter(this.lens, this.el);
-    this.onload = this.onload.bind(this);
-    this.onmove = this.onmove.bind(this);
-    this.onend = this.onend.bind(this);
     this.show();
     this.calcImageSize();
     this.bind();
@@ -39,37 +38,37 @@ export default class Magnifier {
     orig.style.width = 'auto';
     orig.style.visibility = 'hidden';
     orig.src = this.el.src;
-    orig.onload = this.onload;
+    orig.handleLoad = this.handleLoad;
     this.lens.appendChild(orig);
   }
 
   bind() {
-    this.el.addEventListener('mousemove', this.onmove, false);
-    this.el.addEventListener('mouseleave', this.onend, false);
-    this.el.addEventListener('touchstart', this.onmove, false);
-    this.el.addEventListener('touchmove', this.onmove, false);
-    this.el.addEventListener('touchend', this.onend, false);
-    this.lens.addEventListener('mousemove', this.onmove, false);
-    this.lens.addEventListener('mouseleave', this.onend, false);
-    this.lens.addEventListener('touchmove', this.onmove, false);
-    this.lens.addEventListener('touchend', this.onend, false);
+    this.el.addEventListener('mousemove', this.handleTouchMove, false);
+    this.el.addEventListener('mouseleave', this.handleTouchEnd, false);
+    this.el.addEventListener('touchstart', this.handleTouchMove, false);
+    this.el.addEventListener('touchmove', this.handleTouchMove, false);
+    this.el.addEventListener('touchend', this.handleTouchEnd, false);
+    this.lens.addEventListener('mousemove', this.handleTouchMove, false);
+    this.lens.addEventListener('mouseleave', this.handleTouchEnd, false);
+    this.lens.addEventListener('touchmove', this.handleTouchMove, false);
+    this.lens.addEventListener('touchend', this.handleTouchEnd, false);
     return this;
   }
 
   unbind() {
-    this.el.removeEventListener('mousemove', this.onmove, false);
-    this.el.removeEventListener('mouseleave', this.onend, false);
-    this.el.removeEventListener('touchstart', this.onmove, false);
-    this.el.removeEventListener('touchmove', this.onmove, false);
-    this.el.removeEventListener('touchend', this.onend, false);
-    this.lens.removeEventListener('mousemove', this.onmove, false);
-    this.lens.removeEventListener('mouseleave', this.onend, false);
-    this.lens.removeEventListener('touchmove', this.onmove, false);
-    this.lens.removeEventListener('touchend', this.onend, false);
+    this.el.removeEventListener('mousemove', this.handleTouchMove, false);
+    this.el.removeEventListener('mouseleave', this.handleTouchEnd, false);
+    this.el.removeEventListener('touchstart', this.handleTouchMove, false);
+    this.el.removeEventListener('touchmove', this.handleTouchMove, false);
+    this.el.removeEventListener('touchend', this.handleTouchEnd, false);
+    this.lens.removeEventListener('mousemove', this.handleTouchMove, false);
+    this.lens.removeEventListener('mouseleave', this.handleTouchEnd, false);
+    this.lens.removeEventListener('touchmove', this.handleTouchMove, false);
+    this.lens.removeEventListener('touchend', this.handleTouchEnd, false);
     return this;
   }
 
-  onload() {
+  handleLoad() {
     const orig = this.lens.getElementsByTagName('img')[0];
     this.imageWidth = orig.offsetWidth;
     this.imageHeight = orig.offsetHeight;
@@ -79,27 +78,31 @@ export default class Magnifier {
     this.lens.removeChild(orig);
   }
 
-  onmove(event) {
+  handleTouchMove(event) {
     event.preventDefault();
-    event = event.type.indexOf('touch') === 0 ? event.changedTouches[0] : event;
-    if (!isPointerInside(this.el, event)) return this.hide();
-    this.show();
-    const {pageX, pageY} = event;
-    const {left, top} = offset(this.el);
-    const {offsetLeft, offsetTop, offsetWidth, offsetHeight} = this.el;
-    const {width, height, borderWidth} = this.props;
-    const ratioX = this.imageWidth / offsetWidth;
-    const ratioY = this.imageHeight / offsetHeight;
-    const imageX = (left - pageX) * ratioX + width / 2 - borderWidth;
-    const imageY = (top - pageY) * ratioY + height / 2 - borderWidth;
-    const x = pageX - width / 2 - (left !== offsetLeft ? left - offsetLeft : 0);
-    const y = pageY - height / 2 - (top !== offsetTop ? top - offsetTop : 0);
-    this.lens.style.left = `${x}px`;
-    this.lens.style.top = `${y}px`;
-    this.lens.style.backgroundPosition = `${imageX}px ${imageY}px`;
+    const touch = event.type.indexOf('touch') === 0 ? event.changedTouches[0] : event;
+
+    if (isPointerInside(this.el, touch)) {
+      this.show();
+      const { pageX, pageY } = touch;
+      const { left, top } = offset(this.el);
+      const { offsetLeft, offsetTop, offsetWidth, offsetHeight } = this.el;
+      const { width, height, borderWidth } = this.props;
+      const ratioX = this.imageWidth / offsetWidth;
+      const ratioY = this.imageHeight / offsetHeight;
+      const imageX = (left - pageX) * ratioX + width / 2 - borderWidth;
+      const imageY = (top - pageY) * ratioY + height / 2 - borderWidth;
+      const x = pageX - width / 2 - (left !== offsetLeft ? left - offsetLeft : 0);
+      const y = pageY - height / 2 - (top !== offsetTop ? top - offsetTop : 0);
+      this.lens.style.left = `${x}px`;
+      this.lens.style.top = `${y}px`;
+      this.lens.style.backgroundPosition = `${imageX}px ${imageY}px`;
+    } else {
+      this.hide();
+    }
   }
 
-  onend() {
+  handleTouchEnd() {
     this.hide();
   }
 
