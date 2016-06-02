@@ -1,6 +1,6 @@
 {
   "name": "magnifier",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Magnifier an image",
   "main": "index.es5.js",
   "jsnext:main": "index.es5.js",
