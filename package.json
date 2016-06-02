@@ -1,14 +1,34 @@
 {
   "name": "magnifier",
-  "description": "Magnifier an image",
   "version": "0.3.0",
+  "description": "Magnifier an image",
+  "main": "index.es5.js",
+  "jsnext:main": "index.es5.js",
+  "files": [
+    "index.js",
+    "index.es5.js"
+  ],
+  "scripts": {
+    "test": "eslint .",
+    "prepublish": "babel index.js --out-file index.es5.js",
+    "postpublish": "rimraf index.es5.js && git push --follow-tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrepolischuk/magnifier.git"
+  },
   "keywords": [
     "image",
     "magnifier",
     "lens",
     "loupe"
   ],
-  "repository": "andrepolischuk/magnifier",
+  "author": "Andrey Polischuk <andre.polischuk@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andrepolischuk/magnifier/issues"
+  },
+  "homepage": "https://github.com/andrepolischuk/magnifier",
   "dependencies": {
     "global-offset": "^0.1.6",
     "insert-after": "^0.1.0",
@@ -24,16 +44,5 @@
     "eslint-config-airbnb-base": "^3.0.1",
     "eslint-plugin-import": "^1.8.1",
     "rimraf": "^2.5.2"
-  },
-  "main": "index.es5.js",
-  "files": [
-    "index.es5.js"
-  ],
-  "scripts": {
-    "test": "eslint .",
-    "prepublish": "babel index.js --out-file index.es5.js",
-    "postpublish": "rimraf index.es5.js && git push --follow-tags"
-  },
-  "author": "Andrey Polischuk <andre.polischuk@gmail.com>",
-  "license": "MIT"
+  }
 }
