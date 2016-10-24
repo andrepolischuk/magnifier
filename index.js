@@ -1,3 +1,4 @@
+/* global document */
 import offset from 'global-offset';
 import insertAfter from 'insert-after';
 import isPointerInside from 'is-pointer-inside';
@@ -90,10 +91,10 @@ export default class Magnifier {
       const { width, height, borderWidth } = this.props;
       const ratioX = this.imageWidth / offsetWidth;
       const ratioY = this.imageHeight / offsetHeight;
-      const imageX = (left - pageX) * ratioX + width / 2 - borderWidth;
-      const imageY = (top - pageY) * ratioY + height / 2 - borderWidth;
-      const x = pageX - width / 2 - (left !== offsetLeft ? left - offsetLeft : 0);
-      const y = pageY - height / 2 - (top !== offsetTop ? top - offsetTop : 0);
+      const imageX = ((left - pageX) * ratioX) + ((width / 2) - borderWidth);
+      const imageY = ((top - pageY) * ratioY) + ((height / 2) - borderWidth);
+      const x = pageX - (width / 2) - (left !== offsetLeft ? left - offsetLeft : 0);
+      const y = pageY - (height / 2) - (top !== offsetTop ? top - offsetTop : 0);
       this.lens.style.left = `${x}px`;
       this.lens.style.top = `${y}px`;
       this.lens.style.backgroundPosition = `${imageX}px ${imageY}px`;
