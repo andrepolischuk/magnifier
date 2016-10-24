@@ -38,7 +38,7 @@ export default class Magnifier {
     orig.style.width = 'auto';
     orig.style.visibility = 'hidden';
     orig.src = this.el.src;
-    orig.handleLoad = this.handleLoad;
+    orig.onload = this.handleLoad;
     this.lens.appendChild(orig);
   }
 
