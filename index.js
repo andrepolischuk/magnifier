@@ -26,7 +26,6 @@ export default class Magnifier {
     this.handleLoad = this.handleLoad.bind(this);
     this.handleTouchMove = this.handleTouchMove.bind(this);
     this.handleTouchEnd = this.handleTouchEnd.bind(this);
-    this.destroy = this.destroy.bind(this);
     Object.keys(this.props).forEach(prop => this.setStyle(prop, this.props[prop]));
     insertAfter(this.lens, this.el);
     this.show();
