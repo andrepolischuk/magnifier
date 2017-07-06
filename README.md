@@ -94,6 +94,10 @@ Forced show lens.
 
 Forced hide lens.
 
+### .destroy()
+
+Unbinds the event handlers and removes the lense
+
 ## License
 
 MIT
