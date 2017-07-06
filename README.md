@@ -96,7 +96,7 @@ Forced hide lens.
 
 ### .destroy()
 
-Unbinds the event handlers and removes the lense
+Unbinds the event handlers and removes the lense.
 
 ## License
 
